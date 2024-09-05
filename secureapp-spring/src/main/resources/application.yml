@@ -1,0 +1,31 @@
+server:
+  port: 8000
+
+spring:
+  application:
+    name: secureapp-spring
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${BD_HOST}:${BD_PORT}/${BD_NAME}?useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC
+    username: ${BD_USERNAME}
+    password: ${BD_PASSWORD}
+    hikari:
+      max-lifetime: 9000
+      minimum-idle: 0
+      maximum-pool-size: 40
+  jpa:
+    hibernate:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+      ddl-auto: create
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html

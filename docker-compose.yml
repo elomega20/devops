@@ -1,0 +1,54 @@
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysqldb
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: bd_secure_app
+      MYSQL_USER: user1
+      MYSQL_PASSWORD: user1234
+    ports:
+      - "3307:3306"
+    networks:
+      - app-network
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  backend:
+    build: ./secureapp-spring
+    container_name: secureapp-backend
+    ports:
+      - "8000:8000"
+    networks:
+      - app-network
+    environment:
+      BD_HOST: mysql
+      BD_PORT: 3306
+      BD_NAME: bd_secure_app
+      BD_USERNAME: user1
+      BD_PASSWORD: user1234
+    depends_on:
+       mysql:
+          condition: service_healthy
+
+  frontend:
+    build: ./signal-drink-angular
+    container_name: signal-drink
+    ports:
+      - "80:80"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
